@@ -33,11 +33,11 @@ class ViewController: UIViewController {
         return label
     }()
     
-    
-    private var NumberTextField : UITextField = {
-        var textfield = UITextField()
-        textfield.translatesAutoresizingMaskIntoConstraints = false
-        return textfield
+    private var SolLabel: UILabel = {
+        var label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 25)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
     }()
     
     private var num1: UIButton = {
@@ -223,30 +223,16 @@ class ViewController: UIViewController {
         return button
     }()
     
-    private var TFN1 : UILabel = {
-        var tf = UILabel()
-        tf.text = ""
-        tf.translatesAutoresizingMaskIntoConstraints = false
-        return tf
-    }()
     
-    var opcnt : Int = 0
-    var numlimit : Int = 0
     
-    @objc private func btnclicked() {
-        var solution : String = ""
-
-        solution += "1"
-        print(solution)
-        
-    }
+    
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(AppTitle)
         view.addSubview(RandomNumber)
-        view.addSubview(NumberTextField)
+        view.addSubview(SolLabel)
         view.addSubview(num1)
         view.addSubview(num2)
         view.addSubview(num3)
@@ -264,7 +250,6 @@ class ViewController: UIViewController {
         view.addSubview(mul)
         view.addSubview(div)
         view.addSubview(Done)
-        view.addSubview(TFN1)
         
         
         NSLayoutConstraint.activate([
@@ -275,6 +260,13 @@ class ViewController: UIViewController {
         NSLayoutConstraint.activate([
             RandomNumber.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
             RandomNumber.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 200)
+        ])
+        
+        NSLayoutConstraint.activate([
+            SolLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            SolLabel.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 300),
+            SolLabel.widthAnchor.constraint(equalToConstant: 300),
+            SolLabel.heightAnchor.constraint(equalToConstant: 50)
         ])
         
         NSLayoutConstraint.activate([
@@ -384,17 +376,105 @@ class ViewController: UIViewController {
             Done.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant:-15),
             Done.heightAnchor.constraint(equalToConstant: 50),
         ])
+        setupButtons()
         
-        NSLayoutConstraint.activate([
-            TFN1.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 50),
-            TFN1.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -50),
-            TFN1.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 300),
-            TFN1.heightAnchor.constraint(equalToConstant: 20),
-            TFN1.widthAnchor.constraint(equalToConstant: 38)
-        ])
         
     }
+    
+    var opcnt : Int = 0
+    var numlimit : Int = 0
+    var solution : String = ""
+    
+    
+    private func setupButtons() {
+        num1.addTarget(self, action: #selector(btnclicked(_:)), for: .touchUpInside)
+        num2.addTarget(self, action: #selector(btnclicked(_:)), for: .touchUpInside)
+        num3.addTarget(self, action: #selector(btnclicked(_:)), for: .touchUpInside)
+        num4.addTarget(self, action: #selector(btnclicked(_:)), for: .touchUpInside)
+        num5.addTarget(self, action: #selector(btnclicked(_:)), for: .touchUpInside)
+        num6.addTarget(self, action: #selector(btnclicked(_:)), for: .touchUpInside)
+        num7.addTarget(self, action: #selector(btnclicked(_:)), for: .touchUpInside)
+        num8.addTarget(self, action: #selector(btnclicked(_:)), for: .touchUpInside)
+        num9.addTarget(self, action: #selector(btnclicked(_:)), for: .touchUpInside)
+        num0.addTarget(self, action: #selector(btnclicked(_:)), for: .touchUpInside)
+        plus.addTarget(self, action: #selector(btnclicked(_:)), for: .touchUpInside)
+        minus.addTarget(self, action: #selector(btnclicked(_:)), for: .touchUpInside)
+        mul.addTarget(self, action: #selector(btnclicked(_:)), for: .touchUpInside)
+        div.addTarget(self, action: #selector(btnclicked(_:)), for: .touchUpInside)
+    }
+    
+    @objc func btnclicked(_ sender : UIButton) {
+        guard let title = sender.title(for: .normal) else {return}
+        solution += title
+        print(solution)
+        Done.addTarget(self, action: #selector(calculate), for: .touchUpInside)
+    }
+    var solarr : [String] = []
+    
+    @objc func calculate() {
+        var StringNums : String = ""
+    
+        for i in solution{
+            if i == "+" || i == "-" || i == "*" || i == "%" {
+                solarr.append(StringNums)
+                StringNums = ""
+                solarr.append(String(i))
+            }
+            else {
+                StringNums += String(i)
+            }
+        }
+        solarr.append(StringNums)
+        Recalculate()
+    }
+    @objc func Recalculate() {
+        var expression = ""
 
+        for (index, element) in solarr.enumerated() {
+            if index % 2 == 0 {
+                // Operand
+                expression += element
+            } else {
+                // Operator
+                expression += " \(element) "
+            }
+        }
+
+        if let result = evaluateExpression(expression) {
+            print(result)
+            // Display or use the result as needed
+        } else {
+            print("Error: Unable to evaluate the expression")
+        }
+    }
+    
+    func AddNum(_ sender1 : String, _ sender2 : String) -> Int {
+        return Int(sender1)! + Int(sender2)!
+    }
+    
+    func MinusNum(_ sender1 : String, _ sender2 : String) -> Int {
+        return Int(sender1)! - Int(sender2)!
+    }
+    
+    func MulNum(_ sender1 : String, _ sender2 : String) -> Int {
+        return Int(sender1)! * Int(sender2)!
+    }
+    
+    func DivNum(_ sender1 : String, _ sender2 : String) -> Int {
+        return Int(sender1)! / Int(sender2)!
+        
+    }
+    
+    func evaluateExpression(_ expression: String) -> Double? {
+        let expressionToEvaluate = NSExpression(format: expression)
+        
+        guard let result = expressionToEvaluate.expressionValue(with: nil, context: nil) as? Double else {
+            print("Error: Unable to evaluate the expression")
+            return nil
+        }
+        
+        return result
+    }
 
 }
 
